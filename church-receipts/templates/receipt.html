@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Donation Receipt</title>
+</head>
+<body>
+  <h1>Donation Receipt</h1>
+
+  <p><strong>Name:</strong> {{ name or "Anonymous" }}</p>
+  <p><strong>Type:</strong> {{ donation_type }}</p>
+  <p><strong>Amount:</strong> KES {{ amount }}</p>
+
+  <a href="/">Enter another donation</a>
+</body>
+</html>
