@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>All Donations</title>
+</head>
+<body>
+  <h1>Donation Records</h1>
+
+  <table border="1" cellpadding="5">
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Amount (KES)</th>
+      <th>Date</th>
+    </tr>
+
+    {% for r in records %}
+    <tr>
+      <td>{{ r[0] or "Anonymous" }}</td>
+      <td>{{ r[1] }}</td>
+      <td>{{ r[2] }}</td>
+      <td>{{ r[3] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <br />
+  <a href="/">Add new donation</a>
+</body>
+</html>
