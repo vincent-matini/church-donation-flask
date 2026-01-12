@@ -1,5 +1,6 @@
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for
+import csv
+from flask import Flask, render_template, request, redirect, url_for, Response
 
 app = Flask(__name__)
 DB_NAME = "donations.db"
@@ -46,14 +47,36 @@ def index():
 def donations():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute("SELECT name, donation_type, amount, date FROM donations ORDER BY date DESC")
+    cursor.execute(
+        "SELECT name, donation_type, amount, date FROM donations ORDER BY date DESC"
+    )
     records = cursor.fetchall()
     conn.close()
 
     return render_template("donations.html", records=records)
 
 
+@app.route("/export")
+def export():
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT name, donation_type, amount, date FROM donations")
+    records = cursor.fetchall()
+    conn.close()
+
+    def generate():
+        yield "Name,Type,Amount,Date\n"
+        for r in records:
+            name = r[0] if r[0] else "Anonymous"
+            yield f"{name},{r[1]},{r[2]},{r[3]}\n"
+
+    return Response(
+        generate(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=donations.csv"}
+    )
+
+
 if __name__ == "__main__":
     init_db()
     app.run(debug=True)
-
