@@ -90,7 +90,6 @@ def donations():
 # ADMIN AUTH
 # -----------------------
 @app.route("/admin/login", methods=["GET", "POST"])
-@admin_required
 def admin_login():
     if request.method == "POST":
         username = request.form["username"]
@@ -110,7 +109,6 @@ def admin_login():
     return render_template("admin_login.html")
 
 @app.route("/admin/dashboard", methods=["GET"])
-@admin_required
 def admin_dashboard():
     if not session.get("user") or session["user"]["role"] != "admin":
         return redirect(url_for("admin_login"))
