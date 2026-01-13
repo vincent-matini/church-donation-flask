@@ -1,10 +1,22 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+from flask import session, redirect, url_for, flash
 import sqlite3
 import os
 
 app = Flask(__name__)
 app.secret_key = "change-this-secret-key"
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("admin_logged_in"):
+            flash("Admin login required")
+            return redirect(url_for("admin_login"))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 # -----------------------
 # DATABASE
@@ -78,6 +90,7 @@ def donations():
 # ADMIN AUTH
 # -----------------------
 @app.route("/admin/login", methods=["GET", "POST"])
+@admin_required
 def admin_login():
     if request.method == "POST":
         username = request.form["username"]
@@ -97,6 +110,7 @@ def admin_login():
     return render_template("admin_login.html")
 
 @app.route("/admin/dashboard", methods=["GET"])
+@admin_required
 def admin_dashboard():
     if not session.get("user") or session["user"]["role"] != "admin":
         return redirect(url_for("admin_login"))
@@ -110,6 +124,7 @@ def admin_dashboard():
     return render_template("admin_dashboard.html", donations=donations)
 
 @app.route("/admin/delete/<int:donation_id>", methods=["POST"])
+@admin_required
 def delete_donation(donation_id):
     if not session.get("user") or session["user"]["role"] != "admin":
         return redirect(url_for("admin_login"))
@@ -122,9 +137,11 @@ def delete_donation(donation_id):
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/logout")
+@admin_required
 def admin_logout():
     session.pop("user", None)
     return redirect(url_for("admin_login"))
+    
 
 # -----------------------
 # RENDER PORT BINDING
