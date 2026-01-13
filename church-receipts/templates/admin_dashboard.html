@@ -1,29 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
   <div class="container">
     <h2>Donations Dashboard</h2>
 
-    <a href="/admin/logout">Logout</a>
+    <p>
+      Logged in as <strong>{{ session['user']['username'] }}</strong>
+    </p>
 
-    <table>
-      <tr>
-        <th>Name</th>
-        <th>Amount</th>
-        <th>Date</th>
-      </tr>
-      {% for d in donations %}
-      <tr>
-        <td>{{ d[0] }}</td>
-        <td>{{ d[1] }}</td>
-        <td>{{ d[2] }}</td>
-      </tr>
-      {% endfor %}
-    </table>
+    <a href="{{ url_for('admin_logout') }}">Logout</a>
+
+    <hr>
+
+    {% if donations %}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for d in donations %}
+          <tr>
+            <td>{{ d["name"] }}</td>
+            <td>{{ d["amount"] }}</td>
+            <td>{{ d["date"] }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('delete_donation', donation_id=d['id']) }}">
+                <button type="submit" onclick="return confirm('Delete this donation?')">
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No donations found.</p>
+    {% endif %}
   </div>
 </body>
 </html>
