@@ -1,26 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Church Donation Entry</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-  <h1>Church Donation Entry</h1>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+  <div class="container">
+    <h1>Church Donation Entry</h1>
+  <p>Record tithes, offerings, and special giving.</p>
 
   <form method="POST">
-    <label>Name (optional):</label><br />
+    <label>Name (optional)</label><br />
     <input type="text" name="name" /><br /><br />
 
-    <label>Donation Type:</label><br />
+    <label>Donation Type</label><br />
     <select name="type">
       <option value="Tithe">Tithe</option>
       <option value="Offering">Offering</option>
       <option value="Special Giving">Special Giving</option>
     </select><br /><br />
 
-    <label>Amount:</label><br />
+    <label>Amount (KES)</label><br />
     <input type="number" name="amount" required /><br /><br />
 
-    <button type="submit">Generate Receipt</button>
+    <button type="submit">Save Donation</button>
   </form>
+
+  <br />
+  <a href="/donations">View All Donations</a>
+  </div>
 </body>
+
 </html>

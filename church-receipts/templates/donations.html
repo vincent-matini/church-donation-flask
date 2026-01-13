@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>All Donations</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-  <h1>Donation Records</h1>
+<body style="font-family: Arial, sans-serif; max-width: 800px; margin: auto;">
+<div class="container">
+    <h1>Donation Records</h1>
 
-  <table border="1" cellpadding="5">
+  <table border="1" cellpadding="8" cellspacing="0" width="100%">
     <tr>
       <th>Name</th>
       <th>Type</th>
@@ -25,6 +28,9 @@
   </table>
 
   <br />
-  <a href="/">Add new donation</a>
+  <a href="/">Add new donation</a> |
+  <a href="/export">Export CSV</a>
+</div>
 </body>
+
 </html>
