@@ -137,11 +137,10 @@ def delete_donation(donation_id):
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/logout")
-@admin_required
 def admin_logout():
     session.pop("user", None)
     return redirect(url_for("admin_login"))
-    
+
 
 # -----------------------
 # RENDER PORT BINDING
