@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+{% extends "base.html" %}
+{% block content %}
   <div class="container">
     <h1>Church Donation Entry</h1>
   <p>Record tithes, offerings, and special giving.</p>
@@ -30,6 +32,7 @@
   <br />
   <a href="/donations">View All Donations</a>
   </div>
+{% endblock %}
 </body>
 
 </html>

@@ -4,6 +4,8 @@
   <title>Donation Receipt</title>
 </head>
 <body>
+{% extends "base.html" %}
+{% block content %}
   <h1>Donation Receipt</h1>
 
   <p><strong>Name:</strong> {{ name or "Anonymous" }}</p>
@@ -11,5 +13,6 @@
   <p><strong>Amount:</strong> KES {{ amount }}</p>
 
   <a href="/">Enter another donation</a>
+{% endblock %}
 </body>
 </html>
