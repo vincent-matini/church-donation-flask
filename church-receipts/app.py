@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import os
 
@@ -6,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = "change-this-secret-key"
 
 # -----------------------
-# DATABASE SETUP
+# DATABASE
 # -----------------------
 def get_db_connection():
     conn = sqlite3.connect("donations.db")
@@ -27,6 +28,12 @@ def init_db():
     conn.close()
 
 init_db()
+
+# -----------------------
+# ADMIN CREDENTIALS
+# -----------------------
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD_HASH = generate_password_hash("admin123")
 
 # -----------------------
 # PUBLIC ROUTES
@@ -54,7 +61,7 @@ def donate():
 
     return render_template("donate.html")
 
-@app.route("/donations")
+@app.route("/donations", methods=["GET"])
 def donations():
     conn = get_db_connection()
     donations = conn.execute(
@@ -73,35 +80,51 @@ def admin_login():
         username = request.form["username"]
         password = request.form["password"]
 
-        # TEMP credentials (will secure later)
-        if username == "admin" and password == "admin123":
-            session["admin"] = True
+        if username == ADMIN_USERNAME and check_password_hash(
+            ADMIN_PASSWORD_HASH, password
+        ):
+            session["user"] = {
+                "username": ADMIN_USERNAME,
+                "role": "admin"
+            }
             return redirect(url_for("admin_dashboard"))
-        else:
-            return "Invalid credentials", 401
+
+        return "Invalid credentials", 401
 
     return render_template("admin_login.html")
 
-@app.route("/admin/dashboard")
+@app.route("/admin/dashboard", methods=["GET"])
 def admin_dashboard():
-    if not session.get("admin"):
+    if not session.get("user") or session["user"]["role"] != "admin":
         return redirect(url_for("admin_login"))
 
     conn = get_db_connection()
     donations = conn.execute(
-        "SELECT name, amount, date FROM donations ORDER BY id DESC"
+        "SELECT id, name, amount, date FROM donations ORDER BY id DESC"
     ).fetchall()
     conn.close()
 
     return render_template("admin_dashboard.html", donations=donations)
 
+@app.route("/admin/delete/<int:donation_id>", methods=["POST"])
+def delete_donation(donation_id):
+    if not session.get("user") or session["user"]["role"] != "admin":
+        return redirect(url_for("admin_login"))
+
+    conn = get_db_connection()
+    conn.execute("DELETE FROM donations WHERE id = ?", (donation_id,))
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("admin_dashboard"))
+
 @app.route("/admin/logout")
 def admin_logout():
-    session.pop("admin", None)
+    session.pop("user", None)
     return redirect(url_for("admin_login"))
 
 # -----------------------
-# RENDER / PORT SUPPORT
+# RENDER PORT BINDING
 # -----------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
