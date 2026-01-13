@@ -45,14 +45,15 @@ def index():
 @app.route("/donate", methods=["GET", "POST"])
 def donate():
     if request.method == "POST":
-        name = request.form["name"]
-        amount = request.form["amount"]
-        date = request.form["date"]
+        name = request.form.get("name")
+        donation_type = request.form.get("donation_type")
+        amount = request.form.get("amount")
 
-        conn = get_db_connection()
-        conn.execute(
-            "INSERT INTO donations (name, amount, date) VALUES (?, ?, ?)",
-            (name, amount, date)
+        conn = sqlite3.connect("donations.db")
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO donations (name, donation_type, amount) VALUES (?, ?, ?)",
+            (name, donation_type, amount)
         )
         conn.commit()
         conn.close()
@@ -61,15 +62,17 @@ def donate():
 
     return render_template("donate.html")
 
-@app.route("/donations", methods=["GET"])
+
+@app.route("/donations")
 def donations():
-    conn = get_db_connection()
-    donations = conn.execute(
-        "SELECT name, amount, date FROM donations ORDER BY id DESC"
-    ).fetchall()
+    conn = sqlite3.connect("donations.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM donations")
+    data = cursor.fetchall()
     conn.close()
 
-    return render_template("donations.html", donations=donations)
+    return render_template("donations.html", donations=data)
+
 
 # -----------------------
 # ADMIN AUTH
@@ -129,3 +132,4 @@ def admin_logout():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+ 

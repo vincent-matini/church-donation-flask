@@ -10,7 +10,7 @@
     <h1>Church Donation Entry</h1>
   <p>Record tithes, offerings, and special giving.</p>
 
-  <form method="POST">
+  <form method="POST" action="{{ url_for('donate') }}">
     <label>Name (optional)</label><br />
     <input type="text" name="name" /><br /><br />
 
