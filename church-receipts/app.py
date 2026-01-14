@@ -112,7 +112,7 @@ def thank_you():
 # --------------------------------------------------
 # ADMIN AUTH
 # --------------------------------------------------
-@app.route("/admin/login", methods=["GET", "POST"])
+@app.route("/admin/login", methods=["GET", "POST"], strict_slashes=False)
 def admin_login():
     if request.method == "POST":
         username = request.form.get("username", "")
