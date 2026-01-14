@@ -131,7 +131,7 @@ def admin_dashboard():
     return render_template("admin_dashboard.html", donations=donations)
 
 @app.route("/admin/delete/<int:id>", methods=["POST"])
-@admin_required
+@login_required
 def delete_donation(id):
     conn = get_db()
     conn.execute("DELETE FROM donations WHERE id = ?", (id,))
