@@ -1,12 +1,4 @@
-from flask import (
-    Flask,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    session,
-    flash
-)
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import sqlite3
@@ -44,7 +36,8 @@ def init_db():
     conn.commit()
     conn.close()
 
-init_db()
+with app.app_context():
+    init_db()
 
 # --------------------------------------------------
 # ADMIN CONFIG
@@ -86,10 +79,7 @@ def donate():
 
             conn = get_db()
             conn.execute(
-                """
-                INSERT INTO donations (name, type, amount, date)
-                VALUES (?, ?, ?, ?)
-                """,
+                "INSERT INTO donations (name, type, amount, date) VALUES (?, ?, ?, ?)",
                 (name, dtype, amount, datetime.utcnow().isoformat())
             )
             conn.commit()
@@ -112,16 +102,13 @@ def thank_you():
 # --------------------------------------------------
 # ADMIN AUTH
 # --------------------------------------------------
-@app.route("/admin/login", methods=["GET", "POST"], strict_slashes=False)
+@app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
         username = request.form.get("username", "")
         password = request.form.get("password", "")
 
-        if (
-            username == ADMIN_USERNAME
-            and check_password_hash(ADMIN_PASSWORD_HASH, password)
-        ):
+        if username == ADMIN_USERNAME and check_password_hash(ADMIN_PASSWORD_HASH, password):
             session["admin_logged_in"] = True
             return redirect(url_for("admin_dashboard"))
 
@@ -133,7 +120,7 @@ def admin_login():
 @app.route("/admin/logout")
 def admin_logout():
     session.clear()
-    flash("Logged out successfully")
+    flash("Logged out successfully", "success")
     return redirect(url_for("admin_login"))
 
 # --------------------------------------------------
@@ -142,42 +129,21 @@ def admin_logout():
 @app.route("/admin/dashboard")
 @admin_required
 def admin_dashboard():
-    try:
-        conn = get_db()
-        donations = conn.execute(
-            """
-            SELECT id, name, type, amount, date
-            FROM donations
-            ORDER BY date DESC
-            """
-        ).fetchall()
-        conn.close()
+    conn = get_db()
+    donations = conn.execute(
+        "SELECT id, name, type, amount, date FROM donations ORDER BY date DESC"
+    ).fetchall()
+    conn.close()
 
-        return render_template(
-            "admin_dashboard.html",
-            donations=donations
-        )
-
-    except Exception as e:
-        print("ADMIN DASHBOARD ERROR:", e)
-        flash("Unable to load dashboard", "error")
-        return redirect(url_for("admin_login"))
+    return render_template("admin_dashboard.html", donations=donations)
 
 @app.route("/admin/delete/<int:donation_id>", methods=["POST"])
 @admin_required
 def delete_donation(donation_id):
-    try:
-        conn = get_db()
-        conn.execute(
-            "DELETE FROM donations WHERE id = ?",
-            (donation_id,)
-        )
-        conn.commit()
-        conn.close()
+    conn = get_db()
+    conn.execute("DELETE FROM donations WHERE id = ?", (donation_id,))
+    conn.commit()
+    conn.close()
 
-        flash("Donation deleted", "success")
-    except Exception as e:
-        print("DELETE ERROR:", e)
-        flash("Failed to delete donation", "error")
-
+    flash("Donation deleted", "success")
     return redirect(url_for("admin_dashboard"))

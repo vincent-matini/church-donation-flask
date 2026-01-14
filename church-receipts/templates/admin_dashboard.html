@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-
-<body>
-  {% extends "admin_base.html" %}
+{% extends "admin_base.html" %}
 {% block content %}
 
 <h1>Donations Dashboard</h1>
@@ -15,33 +6,32 @@
 <p class="muted">Logged in as <strong>admin</strong></p>
 
 <div class="table-wrapper">
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Amount (KES)</th>
-                <th>Date</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for d in donations %}
-            <tr>
-                <td>{{ d.name }}</td>
-                <td>{{ d.amount }}</td>
-                <td>{{ d.date }}</td>
-                <td>
-                    <form method="POST" action="/admin/delete/{{ d.id }}">
-                        <button class="danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Amount (KES)</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in donations %}
+      <tr>
+        <td>{{ d["name"] }}</td>
+        <td>{{ d["type"] }}</td>
+        <td>{{ d["amount"] }}</td>
+        <td>{{ d["date"] }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('delete_donation', donation_id=d['id']) }}">
+            <button class="danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 {% endblock %}
-
-</body>
-</html>
