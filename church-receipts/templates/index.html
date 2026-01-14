@@ -1,38 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Church Donation Entry</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+
 {% extends "base.html" %}
 {% block content %}
-  <div class="container">
-    <h1>Church Donation Entry</h1>
-  <p>Record tithes, offerings, and special giving.</p>
 
-  <form method="POST" action="/donate">
-    <label>Name (optional)</label><br />
-    <input type="text" name="name" /><br /><br />
+<div class="card">
+    <h1>Church Donation</h1>
+    <p>Give your tithes, offerings, and special donations securely.</p>
 
-    <label>Donation Type</label><br />
-    <select name="type">
-      <option value="Tithe">Tithe</option>
-      <option value="Offering">Offering</option>
-      <option value="Special Giving">Special Giving</option>
-    </select><br /><br />
+    <form method="POST" action="/donate">
+        <label>Name (optional)</label>
+        <input type="text" name="name">
 
-    <label>Amount (KES)</label><br />
-    <input type="number" name="amount" required /><br /><br />
+        <label>Phone Number (M-Pesa)</label>
+        <input type="text" name="phone" placeholder="2547XXXXXXXX" required>
 
-    <button type="submit">Save Donation</button>
-  </form>
+        <label>Donation Type</label>
+        <select name="type">
+            <option value="Tithe">Tithe</option>
+            <option value="Offering">Offering</option>
+            <option value="Special Giving">Special Giving</option>
+        </select>
 
-  <br />
-  <a href="/donate">View All Donations</a>
-  </div>
+        <label>Amount (KES)</label>
+        <input type="number" name="amount" required>
+
+        <button type="submit" class="btn-primary">
+            Donate & Pay
+        </button>
+    </form>
+</div>
+
 {% endblock %}
-</body>
 
-</html>

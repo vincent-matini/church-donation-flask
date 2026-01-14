@@ -8,8 +8,11 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 
-DB_PATH = "donations.db"
+# ---------- SAFE DB PATH ----------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "donations.db")
 
+# ---------- ADMIN CONFIG ----------
 ADMIN_USERNAME = os.environ.get("ADMIN_USER", "admin")
 ADMIN_PASSWORD_HASH = generate_password_hash(
     os.environ.get("ADMIN_PASS", "admin123")
@@ -17,7 +20,7 @@ ADMIN_PASSWORD_HASH = generate_password_hash(
 
 # ---------- DATABASE ----------
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -54,26 +57,41 @@ def home():
 @app.route("/donate", methods=["GET", "POST"])
 def donate():
     if request.method == "POST":
-        name = request.form.get("name")
-        dtype = request.form.get("type")
-        amount = request.form.get("amount")
+        try:
+            name = request.form.get("name", "").strip()
+            dtype = request.form.get("type", "").strip()
+            amount = float(request.form.get("amount", 0))
 
-        if not amount:
-            flash("Amount is required")
+            if amount <= 0:
+                flash("Invalid donation amount", "error")
+                return redirect(url_for("donate"))
+
+            # 1️⃣ Save donation (pending payment for now)
+            conn = get_db()
+            conn.execute(
+                """
+                INSERT INTO donations (name, type, amount, date)
+                VALUES (?, ?, ?, ?)
+                """,
+                (name, dtype, amount, datetime.utcnow().isoformat()),
+            )
+            conn.commit()
+            conn.close()
+
+            # 2️⃣ (HOOK) — M-Pesa STK Push will be called here later
+            # initiate_mpesa_stk(phone, amount)
+
+            flash("Donation received. Thank you for your support 🙏", "success")
+            return redirect(url_for("thank_you"))
+
+        except Exception as e:
+            print("DONATION ERROR:", e)
+            flash("Server error while saving donation", "error")
             return redirect(url_for("donate"))
 
-        conn = get_db()
-        conn.execute(
-            "INSERT INTO donations (name, type, amount, date) VALUES (?, ?, ?, ?)",
-            (name, dtype, amount, datetime.now().isoformat()),
-        )
-        conn.commit()
-        conn.close()
+    # GET request → show donation form
+    return render_template("donate.html")
 
-        flash("Donation saved successfully")
-        return redirect(url_for("donate"))
-
-    return render_template("donations.html")
 
 # ---------- ADMIN ----------
 @app.route("/admin/login", methods=["GET", "POST"])
@@ -96,6 +114,11 @@ def admin_login():
 def admin_logout():
     session.clear()
     return redirect(url_for("admin_login"))
+
+@app.route("/thank-you")
+def thank_you():
+    return render_template("thank_you.html")
+
 
 @app.route("/admin/dashboard")
 @admin_required
