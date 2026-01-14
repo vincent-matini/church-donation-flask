@@ -97,18 +97,17 @@ def donate():
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
-        if (
-            request.form.get("username") == ADMIN_USERNAME
-            and check_password_hash(
-                ADMIN_PASSWORD_HASH, request.form.get("password")
-            )
-        ):
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        if username == ADMIN_USERNAME and check_password_hash(ADMIN_PASSWORD_HASH, password):
             session["admin_logged_in"] = True
             return redirect(url_for("admin_dashboard"))
-
-        flash("Invalid credentials")
+        else:
+            flash("Invalid credentials", "error")
 
     return render_template("admin_login.html")
+
 
 @app.route("/admin/logout")
 def admin_logout():
