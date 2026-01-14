@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <h1>Make a Donation</h1>
+  <p>Your support helps the church ministry.</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="/donate">
+    <label>Name (optional)</label>
+    <input type="text" name="name" />
+
+    <label>Donation Type</label>
+    <select name="type" required>
+      <option value="Tithe">Tithe</option>
+      <option value="Offering">Offering</option>
+      <option value="Special Giving">Special Giving</option>
+    </select>
+
+    <label>Amount (KES)</label>
+    <input type="number" name="amount" min="1" required />
+
+    <button type="submit">Save Donation</button>
+  </form>
+
+  <br />
+  <a href="/">← Back to Home</a>
+</div>
+{% endblock %}
