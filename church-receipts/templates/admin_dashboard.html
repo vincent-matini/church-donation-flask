@@ -1,4 +1,5 @@
 {% extends "admin_base.html" %}
+
 {% block content %}
 
 <h1>Donations Dashboard</h1>
@@ -16,18 +17,23 @@
         <th>Action</th>
       </tr>
     </thead>
+
     <tbody>
       {% for d in donations %}
       <tr>
-        <td>{{ d["name"] }}</td>
-        <td>{{ d["type"] }}</td>
-        <td>{{ d["amount"] }}</td>
-        <td>{{ d["date"] }}</td>
+        <td>{{ d.name or "Anonymous" }}</td>
+        <td>{{ d.type }}</td>
+        <td>{{ d.amount }}</td>
+        <td>{{ d.date }}</td>
         <td>
-          <form method="POST" action="{{ url_for('delete_donation', donation_id=d['id']) }}">
-            <button class="danger">Delete</button>
+          <form method="POST" action="{{ url_for('delete_donation', donation_id=d.id) }}">
+            <button type="submit" class="danger">Delete</button>
           </form>
         </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" style="text-align:center;">No donations yet</td>
       </tr>
       {% endfor %}
     </tbody>
