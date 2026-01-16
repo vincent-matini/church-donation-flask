@@ -2,25 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title or "Admin Panel" }}</title>
+    <title>{{ title or "Church Donation System" }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="admin-body">
+<body>
 
-    <nav class="admin-navbar">
-        <div class="admin-nav-left">
-            <strong>Admin Panel</strong>
+    <!-- PUBLIC NAVBAR -->
+    <nav class="public-navbar">
+        <div class="nav-left">
+            <strong>Church Donation</strong>
         </div>
-        <div class="admin-nav-right">
-            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('admin_logout') }}">Logout</a>
+        <div class="nav-right">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('donate') }}">Donate</a>
+            <a href="{{ url_for('admin_login') }}">Admin</a>
         </div>
     </nav>
 
-    <main class="admin-container">
+    <!-- PAGE CONTENT -->
+    <main class="container">
         {% block content %}{% endblock %}
     </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>
+            © {{ now().year if now is defined else "2026" }}
+            Church Donation System. All rights reserved.
+        </p>
+    </footer>
 
 </body>
 </html>
