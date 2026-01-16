@@ -63,7 +63,7 @@ def admin_required(f):
 # --------------------------------------------------
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("base.html")
 
 @app.route("/donate", methods=["GET", "POST"])
 def donate():
