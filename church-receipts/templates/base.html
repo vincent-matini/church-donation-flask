@@ -2,41 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title or "Church Donation System" }}</title>
+    <title>{{ title or "Admin Panel" }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="admin-body">
 
-    <nav class="navbar">
-        <div class="nav-container">
-            <span class="logo">Church Donations</span>
-            <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/donate">Donate</a>
-                <a href="/admin/login">Admin</a>
-            </div>
+    <nav class="admin-navbar">
+        <div class="admin-nav-left">
+            <strong>Admin Panel</strong>
+        </div>
+        <div class="admin-nav-right">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_logout') }}">Logout</a>
         </div>
     </nav>
 
-    <main class="container">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="flash">
-                    {% for msg in messages %}
-                        <p>{{ msg }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
+    <main class="admin-container">
         {% block content %}{% endblock %}
     </main>
-
-    <footer class="footer">
-        <p>&copy; {{ 2026 }} Church Donation System</p>
-    </footer>
 
 </body>
 </html>

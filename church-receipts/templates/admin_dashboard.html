@@ -22,18 +22,21 @@
       {% for d in donations %}
       <tr>
         <td>{{ d.name or "Anonymous" }}</td>
-        <td>{{ d.type }}</td>
+        <td>{{ d.dtype if d.dtype is defined else d.type }}</td>
         <td>{{ d.amount }}</td>
         <td>{{ d.date }}</td>
         <td>
-          <form method="POST" action="{{ url_for('delete_donation', donation_id=d.id) }}">
+          <form method="POST"
+                action="{{ url_for('delete_donation', donation_id=d.id) }}">
             <button type="submit" class="danger">Delete</button>
           </form>
         </td>
       </tr>
       {% else %}
       <tr>
-        <td colspan="5" style="text-align:center;">No donations yet</td>
+        <td colspan="5" style="text-align:center;">
+          No donations recorded yet
+        </td>
       </tr>
       {% endfor %}
     </tbody>
