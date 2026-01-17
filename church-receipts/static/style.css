@@ -167,3 +167,50 @@ button.danger:hover {
     background: #991b1b;
 }
 
+/* ==============================
+   PUBLIC NAVBAR
+================================ */
+
+.public-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f2937;
+  padding: 14px 24px;
+}
+
+.public-navbar a {
+  color: #ffffff;
+  text-decoration: none;
+  margin-left: 16px;
+  font-weight: 500;
+}
+
+.public-navbar a:hover {
+  text-decoration: underline;
+}
+
+.nav-left strong {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+
+/* ==============================
+   FOOTER
+================================ */
+
+.footer {
+  margin-top: 60px;
+  padding: 20px;
+  text-align: center;
+  background: #f3f4f6;
+  color: #555;
+  font-size: 14px;
+}
+
