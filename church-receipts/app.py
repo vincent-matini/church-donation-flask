@@ -140,10 +140,15 @@ def admin_dashboard():
     ).fetchall()
     conn.close()
 
+    # DEBUG SAFETY: ensure donations is always iterable
+    if donations is None:
+        donations = []
+
     return render_template(
         "admin_dashboard.html",
         donations=donations
     )
+
 
 @app.route("/admin/delete/<int:donation_id>", methods=["POST"])
 @admin_required
