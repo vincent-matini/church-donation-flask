@@ -6,38 +6,32 @@
 
 <p class="muted">Logged in as <strong>admin</strong></p>
 
-<div class="table-wrapper">
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Amount (KES)</th>
-        <th>Date</th>
-        <th>Action</th>
-      </tr>
-    </thead>
+<table border="1" cellpadding="10" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Amount</th>
+      <th>Date</th>
+      <th>Action</th>
+    </tr>
+  </thead>
 
-    <tbody>
-      {% for d in donations %}
-      <tr>
-        <td>{{ d.name or "Anonymous" }}</td>
-        <td>{{ d.type }}</td>
-        <td>{{ d.amount }}</td>
-        <td>{{ d.date }}</td>
-        <td>
-          <form method="POST" action="{{ url_for('delete_donation', donation_id=d.id) }}">
-            <button class="danger">Delete</button>
-          </form>
-        </td>
-      </tr>
-      {% else %}
-      <tr>
-        <td colspan="5" style="text-align:center;">No donations yet</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
+  <tbody>
+    {% for d in donations %}
+    <tr>
+      <td>{{ d.name }}</td>
+      <td>{{ d.type }}</td>
+      <td>{{ d.amount }}</td>
+      <td>{{ d.date }}</td>
+      <td>
+        <form method="POST" action="{{ url_for('delete_donation', donation_id=d.id) }}">
+          <button type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 {% endblock %}

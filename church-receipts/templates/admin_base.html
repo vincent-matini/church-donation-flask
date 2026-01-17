@@ -2,25 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ title or "Admin Panel" }}</title>
+    <title>Admin Panel</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="admin-body">
+<body>
 
-    <nav class="admin-navbar">
-        <div class="admin-nav-left">
-            <strong>Admin Panel</strong>
-        </div>
-        <div class="admin-nav-right">
-            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('admin_logout') }}">Logout</a>
-        </div>
-    </nav>
+<nav>
+    <a href="{{ url_for('admin_dashboard') }}">Dashboard</a> |
+    <a href="{{ url_for('admin_logout') }}">Logout</a>
+</nav>
 
-    <main class="admin-container">
-        {% block content %}{% endblock %}
-    </main>
+<hr>
+
+{% block content %}{% endblock %}
 
 </body>
 </html>

@@ -132,13 +132,15 @@ def admin_logout():
 def admin_dashboard():
     conn = get_db()
     donations = conn.execute(
-        """
-        SELECT id, name, type, amount, date
-        FROM donations
-        ORDER BY date DESC
-        """
+        "SELECT id, name, type, amount, date FROM donations"
     ).fetchall()
     conn.close()
+
+    return render_template(
+        "admin_dashboard.html",
+        donations=donations
+    )
+
 
     # DEBUG SAFETY: ensure donations is always iterable
     if donations is None:
