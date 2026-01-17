@@ -116,7 +116,7 @@ def admin_login():
         flash("Invalid username or password", "error")
         return redirect(url_for("admin_login"))
 
-    return render_template("admin_login")
+    return render_template("admin_login.html")
 
 @app.route("/admin/logout")
 def admin_logout():
@@ -155,3 +155,7 @@ def delete_donation(donation_id):
 
     flash("Donation deleted", "success")
     return redirect(url_for("admin_dashboard"))
+
+@app.context_processor
+def inject_now():
+    return {"now": datetime.utcnow}
