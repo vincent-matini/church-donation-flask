@@ -111,7 +111,7 @@ def admin_login():
 
         if username == ADMIN_USERNAME and check_password_hash(ADMIN_PASSWORD_HASH, password):
             session["admin_logged_in"] = True
-            return redirect(url_for("admin_dashboard.html"))
+            return redirect_template("admin_dashboard.html")
 
         flash("Invalid username or password", "error")
         return redirect(url_for("admin_login"))
