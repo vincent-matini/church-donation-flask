@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key")
 
 # --------------------------------------------------
-# DATABASE
+# DATABASE CONFIG
 # --------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "donations.db")
@@ -54,6 +54,7 @@ def admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         if not session.get("admin_logged_in"):
+            flash("Please login first", "error")
             return redirect(url_for("admin_login"))
         return f(*args, **kwargs)
     return wrapper
@@ -64,7 +65,6 @@ def admin_required(f):
 @app.route("/")
 def home():
     return render_template("index.html")
-    
 
 @app.route("/donate", methods=["GET", "POST"])
 def donate():
@@ -101,7 +101,7 @@ def thank_you():
     return render_template("thank_you.html")
 
 # --------------------------------------------------
-# ADMIN AUTH
+# ADMIN AUTH ROUTES
 # --------------------------------------------------
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
@@ -109,9 +109,13 @@ def admin_login():
         username = request.form.get("username", "")
         password = request.form.get("password", "")
 
-        if username == ADMIN_USERNAME and check_password_hash(ADMIN_PASSWORD_HASH, password):
+        if (
+            username == ADMIN_USERNAME
+            and check_password_hash(ADMIN_PASSWORD_HASH, password)
+        ):
             session["admin_logged_in"] = True
-            return render_template("admin_dashboard.html")
+            flash("Welcome Admin", "success")
+            return redirect(url_for("admin_dashboard"))
 
         flash("Invalid username or password", "error")
         return redirect(url_for("admin_login"))
@@ -130,30 +134,40 @@ def admin_logout():
 @app.route("/admin/dashboard")
 @admin_required
 def admin_dashboard():
-   conn = get_db()
-   donations = conn.execute(
-       "SELECT id, name, type, amount, date FROM donations"
-   ).fetchall()
-   conn.close()
+    conn = get_db()
 
-   return render_template(
-       "admin_dashboard.html",
-       donations=donations
-   )
+    donations = conn.execute("""
+        SELECT id, name, type, amount, date
+        FROM donations
+        ORDER BY date DESC
+    """).fetchall()
 
+    total_amount = conn.execute(
+        "SELECT COALESCE(SUM(amount), 0) FROM donations"
+    ).fetchone()[0]
 
+    total_count = conn.execute(
+        "SELECT COUNT(*) FROM donations"
+    ).fetchone()[0]
 
+    today_count = conn.execute("""
+        SELECT COUNT(*) FROM donations
+        WHERE date(date) = date('now')
+    """).fetchone()[0]
 
-    # DEBUG SAFETY: ensure donations is always iterable
-    if donations is None:
-        donations = []
+    conn.close()
 
     return render_template(
         "admin_dashboard.html",
-        donations=donations
+        donations=donations,
+        total_amount=total_amount,
+        total_count=total_count,
+        today_count=today_count
     )
 
-
+# --------------------------------------------------
+# DELETE DONATION
+# --------------------------------------------------
 @app.route("/admin/delete/<int:donation_id>", methods=["POST"])
 @admin_required
 def delete_donation(donation_id):
@@ -162,9 +176,12 @@ def delete_donation(donation_id):
     conn.commit()
     conn.close()
 
-    flash("Donation deleted", "success")
+    flash("Donation deleted successfully", "success")
     return redirect(url_for("admin_dashboard"))
 
+# --------------------------------------------------
+# CONTEXT PROCESSOR (YEAR)
+# --------------------------------------------------
 @app.context_processor
 def inject_now():
     return {"now": datetime.utcnow}
