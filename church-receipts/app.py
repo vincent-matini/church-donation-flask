@@ -131,15 +131,36 @@ def admin_logout():
 @admin_required
 def admin_dashboard():
     conn = get_db()
-    donations = conn.execute(
-        "SELECT id, name, type, amount, date FROM donations"
-    ).fetchall()
+
+    donations = conn.execute("""
+        SELECT id, name, type, amount, date
+        FROM donations
+        ORDER BY date DESC
+    """).fetchall()
+
+    total_amount = conn.execute(
+        "SELECT COALESCE(SUM(amount), 0) FROM donations"
+    ).fetchone()[0]
+
+    total_count = conn.execute(
+        "SELECT COUNT(*) FROM donations"
+    ).fetchone()[0]
+
+    today_count = conn.execute("""
+        SELECT COUNT(*) FROM donations
+        WHERE date(date) = date('now')
+    """).fetchone()[0]
+
     conn.close()
 
     return render_template(
         "admin_dashboard.html",
-        donations=donations
+        donations=donations,
+        total_amount=total_amount,
+        total_count=total_count,
+        today_count=today_count
     )
+
 
 
     # DEBUG SAFETY: ensure donations is always iterable
