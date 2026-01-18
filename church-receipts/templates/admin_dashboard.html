@@ -1,70 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ title or "Admin Dashboard" }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends "admin_base.html" %}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f6f9;
-        }
+{% block content %}
 
-        .admin-navbar {
-            background: #1f2937;
-            color: #fff;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+<h1 style="margin-bottom: 10px;">Donations Dashboard</h1>
+<p class="muted" style="margin-bottom: 25px;">
+    Below is a record of all donations received.
+</p>
 
-        .admin-navbar a {
-            color: #fff;
-            text-decoration: none;
-            margin-left: 20px;
-            font-weight: bold;
-        }
+<div style="overflow-x:auto;">
+    <table style="
+        width: 100%;
+        border-collapse: collapse;
+        background: #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    ">
+        <thead>
+            <tr style="background:#1f2937; color:#fff;">
+                <th style="padding:12px; text-align:left;">Name</th>
+                <th style="padding:12px; text-align:left;">Type</th>
+                <th style="padding:12px; text-align:right;">Amount (KES)</th>
+                <th style="padding:12px; text-align:left;">Date</th>
+                <th style="padding:12px; text-align:center;">Action</th>
+            </tr>
+        </thead>
 
-        .admin-container {
-            padding: 30px;
-        }
+        <tbody>
+            {% if donations %}
+                {% for d in donations %}
+                <tr style="border-bottom:1px solid #e5e7eb;">
+                    <td style="padding:12px;">{{ d.name or "Anonymous" }}</td>
+                    <td style="padding:12px;">{{ d.type }}</td>
+                    <td style="padding:12px; text-align:right;">
+                        {{ "%.2f"|format(d.amount) }}
+                    </td>
+                    <td style="padding:12px;">
+                        {{ d.date }}
+                    </td>
+                    <td style="padding:12px; text-align:center;">
+                        <form
+                            method="POST"
+                            action="{{ url_for('delete_donation', donation_id=d.id) }}"
+                            onsubmit="return confirm('Delete this donation record?');"
+                        >
+                            <button
+                                type="submit"
+                                style="
+                                    background:#dc2626;
+                                    color:#fff;
+                                    border:none;
+                                    padding:6px 12px;
+                                    border-radius:4px;
+                                    cursor:pointer;
+                                "
+                            >
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" style="padding:20px; text-align:center; color:#6b7280;">
+                        No donations recorded yet.
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
 
-        .footer {
-            text-align: center;
-            padding: 15px;
-            background: #e5e7eb;
-            margin-top: 40px;
-            font-size: 14px;
-            color: #555;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- ADMIN NAVBAR -->
-    <nav class="admin-navbar">
-        <div>
-            <strong>Church Donation System — Admin</strong>
-        </div>
-        <div>
-            <a href="#!">Dashboard</a>
-            <a href="{{ url_for('admin_logout') }}">Logout</a>
-        </div>
-    </nav>
-
-    <!-- PAGE CONTENT -->
-    <main class="admin-container">
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-        © 2026 Church Donation System. All rights reserved.
-    </footer>
-
-</body>
-</html>
+{% endblock %}
