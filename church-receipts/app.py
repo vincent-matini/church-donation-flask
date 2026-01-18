@@ -115,7 +115,7 @@ def admin_login():
         ):
             session["admin_logged_in"] = True
             flash("Welcome Admin", "success")
-            return redirect(url_for("admin_dashboard"))
+            return render_template("admin_dashboard.html")
 
         flash("Invalid username or password", "error")
         return redirect(url_for("admin_login"))
