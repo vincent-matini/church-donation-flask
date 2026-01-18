@@ -1,37 +1,70 @@
-{% extends "admin_base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title or "Admin Dashboard" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-{% block content %}
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+        }
 
-<h1>Donations Dashboard</h1>
+        .admin-navbar {
+            background: #1f2937;
+            color: #fff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-<p class="muted">Logged in as <strong>admin</strong></p>
+        .admin-navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+        }
 
-<table border="1" cellpadding="10" cellspacing="0">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Amount</th>
-      <th>Date</th>
-      <th>Action</th>
-    </tr>
-  </thead>
+        .admin-container {
+            padding: 30px;
+        }
 
-  <tbody>
-    {% for d in donations %}
-    <tr>
-      <td>{{ d.name }}</td>
-      <td>{{ d.type }}</td>
-      <td>{{ d.amount }}</td>
-      <td>{{ d.date }}</td>
-      <td>
-        <form method="POST" action="{{ url_for('delete_donation', donation_id=d.id) }}">
-          <button type="submit">Delete</button>
-        </form>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background: #e5e7eb;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
 
-{% endblock %}
+<body>
+
+    <!-- ADMIN NAVBAR -->
+    <nav class="admin-navbar">
+        <div>
+            <strong>Church Donation System — Admin</strong>
+        </div>
+        <div>
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_logout') }}">Logout</a>
+        </div>
+    </nav>
+
+    <!-- PAGE CONTENT -->
+    <main class="admin-container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        © 2026 Church Donation System. All rights reserved.
+    </footer>
+
+</body>
+</html>
