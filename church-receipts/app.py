@@ -109,18 +109,15 @@ def admin_login():
         username = request.form.get("username", "")
         password = request.form.get("password", "")
 
-        if (
-            username == ADMIN_USERNAME
-            and check_password_hash(ADMIN_PASSWORD_HASH, password)
-        ):
+        if username == ADMIN_USERNAME and check_password_hash(ADMIN_PASSWORD_HASH, password):
             session["admin_logged_in"] = True
-            flash("Welcome Admin", "success")
             return redirect(url_for("admin_dashboard"))
 
         flash("Invalid username or password", "error")
         return redirect(url_for("admin_login"))
 
     return render_template("admin_login.html")
+
 
 @app.route("/admin/logout")
 def admin_logout():
@@ -135,35 +132,16 @@ def admin_logout():
 @admin_required
 def admin_dashboard():
     conn = get_db()
-
-    donations = conn.execute("""
-        SELECT id, name, type, amount, date
-        FROM donations
-        ORDER BY date DESC
-    """).fetchall()
-
-    total_amount = conn.execute(
-        "SELECT COALESCE(SUM(amount), 0) FROM donations"
-    ).fetchone()[0]
-
-    total_count = conn.execute(
-        "SELECT COUNT(*) FROM donations"
-    ).fetchone()[0]
-
-    today_count = conn.execute("""
-        SELECT COUNT(*) FROM donations
-        WHERE date(date) = date('now')
-    """).fetchone()[0]
-
+    donations = conn.execute(
+        "SELECT id, name, type, amount, date FROM donations ORDER BY date DESC"
+    ).fetchall()
     conn.close()
 
     return render_template(
         "admin_dashboard.html",
-        donations=donations,
-        total_amount=total_amount,
-        total_count=total_count,
-        today_count=today_count
+        donations=donations or []
     )
+
 
 # --------------------------------------------------
 # DELETE DONATION
